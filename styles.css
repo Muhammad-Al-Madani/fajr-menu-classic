@@ -124,7 +124,6 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 	line-height: 1;
 	cursor: pointer;
 }
-.lang button[lang="ar"] { padding-bottom: 3px; font-family: "Cairo", sans-serif; font-size: 16px; }
 .lang button[aria-pressed="true"] { background: var(--button); color: var(--button-ink); }
 
 .theme {
@@ -347,6 +346,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
 }
 .orderbar-icon { display: grid; place-items: center; }
 .orderbar-count {
+	margin-inline-start: auto;
 	display: grid;
 	place-items: center;
 	min-width: 24px;
@@ -357,7 +357,6 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
 	color: var(--button);
 	font-size: 12px;
 }
-.orderbar-total { margin-inline-start: auto; white-space: nowrap; }
 
 /* ---------- окно заказа ---------- */
 
@@ -395,13 +394,11 @@ dialog::backdrop { background: rgba(10, 10, 10, 0.5); }
 .line-name { font-weight: 700; }
 .line-variant { color: var(--muted); font-size: 13px; }
 .line .stepper { grid-area: stepper; justify-self: end; }
-.line-sum { grid-area: sum; justify-self: end; color: var(--gold); font-weight: 700; white-space: nowrap; }
+.line .price-wrap { grid-area: sum; justify-self: end; align-items: flex-end; text-align: end; }
 .empty { padding: 24px 0; color: var(--muted); text-align: center; }
 
 .sheet-foot { padding: 12px 18px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 .approx-note { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
-.total-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; font-size: 16px; }
-.total-row strong { color: var(--gold); font-family: "Unbounded", sans-serif; font-size: 22px; }
 
 .primary, .secondary { display: block; width: 100%; min-height: 52px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
 .primary { border: 0; background: var(--button); color: var(--button-ink); }
@@ -436,8 +433,6 @@ dialog::backdrop { background: rgba(10, 10, 10, 0.5); }
 .w-qty { flex: none; min-width: 78px; font-weight: 800; }
 .w-name { font-weight: 600; }
 .w-local { display: block; margin-top: 3px; color: #6b665f; font-size: 15px; font-weight: 500; }
-.waiter-total { display: flex; align-items: baseline; justify-content: space-between; padding: 16px 0; font-size: 22px; font-weight: 700; }
-.waiter-total strong { font-size: 32px; }
 .waiter .primary { background: #1d1c1a; color: #fbfaf7; }
 
 @media (prefers-reduced-motion: reduce) {

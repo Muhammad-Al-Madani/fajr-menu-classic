@@ -14,10 +14,10 @@
 		ru: {
 			title: "Fajr Coffee & Breakfast — меню",
 			intro: "Выбирайте блюда — итог посчитается сам. Готовый список покажите официанту.",
-			nav: "Разделы меню", myOrder: "Мой заказ", total: "Итого",
+			nav: "Разделы меню", myOrder: "Мой заказ",
 			showWaiter: "Показать официанту", clear: "Очистить заказ", close: "Закрыть",
 			empty: "Пока пусто — нажмите «+» рядом с блюдом",
-			approx: "Блюда на вес: точная сумма — после взвешивания",
+			approx: "Блюда на вес: точная цена — после взвешивания",
 			per100: "за 100 г", perPc: "за 1 шт.", portion: "порция", scoop: "шарик", g: "г",
 			add: "Добавить", more: "Больше", less: "Меньше", new: "Новинка",
 			toLight: "Светлая тема", toDark: "Тёмная тема", confirmClear: "Очистить весь заказ?",
@@ -27,10 +27,10 @@
 		en: {
 			title: "Fajr Coffee & Breakfast — menu",
 			intro: "Pick your dishes — the total adds up by itself. Show the list to your waiter.",
-			nav: "Menu sections", myOrder: "My order", total: "Total",
+			nav: "Menu sections", myOrder: "My order",
 			showWaiter: "Show to waiter", clear: "Clear order", close: "Close",
 			empty: "Nothing yet — tap “+” next to a dish",
-			approx: "Dishes sold by weight: final price after weighing",
+			approx: "Dishes sold by weight: exact price after weighing",
 			per100: "per 100 g", perPc: "each", portion: "portion", scoop: "scoop", g: "g",
 			add: "Add", more: "More", less: "Less", new: "New",
 			toLight: "Light theme", toDark: "Dark theme", confirmClear: "Clear the whole order?",
@@ -40,10 +40,10 @@
 		ar: {
 			title: "Fajr Coffee & Breakfast — القائمة",
 			intro: "اختر الأطباق وسيُحسب المجموع تلقائيًا. اعرض القائمة الجاهزة على النادل.",
-			nav: "أقسام القائمة", myOrder: "طلبي", total: "المجموع",
+			nav: "أقسام القائمة", myOrder: "طلبي",
 			showWaiter: "اعرضه على النادل", clear: "مسح الطلب", close: "إغلاق",
 			empty: "القائمة فارغة — اضغط «+» بجانب الطبق",
-			approx: "الأطباق بالوزن: يُحدَّد السعر النهائي بعد الوزن",
+			approx: "الأطباق بالوزن: يُحدَّد السعر الدقيق بعد الوزن",
 			per100: "لكل 100 غ", perPc: "للقطعة", portion: "حصة", scoop: "كرة", g: "غ",
 			add: "أضف", more: "زيادة", less: "نقصان", new: "جديد",
 			toLight: "الوضع الفاتح", toDark: "الوضع الداكن", confirmClear: "مسح الطلب بالكامل؟",
@@ -126,10 +126,6 @@
 		return item.unit === "g100" ? (price * qty) / 100 : price * qty;
 	}
 
-	function orderTotal() {
-		return Object.keys(order).reduce((sum, key) => sum + linePrice(key), 0);
-	}
-
 	// ---------- изменение заказа ----------
 	function change(key, dir) {
 		const stepSize = isWeight(key) ? 100 : 1;
@@ -163,6 +159,15 @@
 				<output aria-live="polite">${amount}</output>
 				<button type="button" data-act="plus" aria-label="${t("more")}">${ICON.plus}</button>
 			</span>`;
+	}
+
+	function priceTag(key) {
+		const { item, variant } = lines.get(key);
+		const price = variant ? variant.price : item.price;
+		const unit = unitLabel(item.unit);
+		const qty = order[key] || 0;
+		const approx = isWeight(key) && qty ? `<span class="approx" dir="ltr">≈ ${money(linePrice(key, qty))}</span>` : "";
+		return `<span class="price-wrap"><span class="price" dir="ltr">${money(price)}</span>${unit ? `<span class="unit">${esc(unit)}</span>` : ""}${approx}</span>`;
 	}
 
 	const buy = (key) => `<div class="buy" data-key="${esc(key)}">${buyInner(key)}</div>`;
@@ -235,11 +240,9 @@
 	// ---------- «Мой заказ» ----------
 	function refreshOrder() {
 		const keys = Object.keys(order);
-		const weight = keys.some(isWeight);
 		const count = keys.reduce((n, key) => n + (isWeight(key) ? 1 : order[key]), 0);
 		$("orderbar").hidden = keys.length === 0;
 		$("bar-count").textContent = String(count);
-		$("bar-total").textContent = `${weight ? "≈ " : ""}${money(orderTotal())}`;
 		if ($("order-sheet").open) renderOrderLines();
 	}
 
@@ -263,13 +266,11 @@
 					<output>${amount}</output>
 					<button type="button" data-act="plus" aria-label="${t("more")}">${ICON.plus}</button>
 				</span>
-				<span class="line-sum" dir="ltr">${isWeight(key) ? "≈ " : ""}${money(linePrice(key))}</span>
+				${priceTag(key)}
 			</div>`;
 		}).join("") : `<p class="empty">${t("empty")}</p>`;
 
-		const weight = keys.some(isWeight);
-		$("approx-note").hidden = !weight;
-		$("order-total").textContent = `${weight ? "≈ " : ""}${money(orderTotal())}`;
+		$("approx-note").hidden = !keys.some(isWeight);
 		$("show-waiter").disabled = keys.length === 0;
 		$("clear-order").hidden = keys.length === 0;
 
@@ -291,8 +292,6 @@
 				: "";
 			return `<li><span class="w-qty">${amount}</span><span class="w-name">${esc(ru)}${local}</span></li>`;
 		}).join("");
-		const weight = keys.some(isWeight);
-		$("waiter-total").textContent = `${weight ? "≈ " : ""}${money(orderTotal(), "ru")}`;
 		$("order-sheet").close();
 		$("waiter").showModal();
 	}
