@@ -105,13 +105,13 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .brand { display: flex; flex-direction: column; line-height: 1; text-decoration: none; }
 .brand-name { font-family: "Oswald", sans-serif; font-weight: 600; font-size: 27px; letter-spacing: 0.06em; }
 .brand-underscore { color: var(--gold-bright); }
-.brand-sub { margin-top: 3px; font-family: "Montserrat", sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.2em; color: var(--muted); }
+.brand-sub { margin-top: 3px; font-family: "Montserrat", sans-serif; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; white-space: nowrap; color: var(--muted); }
 
-.controls { display: flex; align-items: center; gap: 8px; }
+.controls { display: flex; align-items: center; gap: 6px; }
 
 .lang { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
 .lang button {
-	min-width: 36px;
+	min-width: 34px;
 	height: 32px;
 	padding: 0 8px;
 	border: 0;
@@ -394,7 +394,6 @@ dialog::backdrop { background: rgba(10, 10, 10, 0.5); }
 .line-name { font-weight: 700; }
 .line-variant { color: var(--muted); font-size: 13px; }
 .line .stepper { grid-area: stepper; justify-self: end; }
-.line .price-wrap { grid-area: sum; justify-self: end; align-items: flex-end; text-align: end; }
 .empty { padding: 24px 0; color: var(--muted); text-align: center; }
 
 .sheet-foot { padding: 12px 18px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
@@ -437,4 +436,44 @@ dialog::backdrop { background: rgba(10, 10, 10, 0.5); }
 
 @media (prefers-reduced-motion: reduce) {
 	html { scroll-behavior: auto; }
+}
+
+/* ---------- суммы: в окне заказа и на экране официанта ---------- */
+
+.line-unit { color: var(--muted); font-size: 12px; }
+.line-sum { grid-area: sum; justify-self: end; color: var(--gold); font-weight: 800; white-space: nowrap; }
+.total-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; font-size: 16px; }
+.total-row strong { color: var(--gold); font-family: "Unbounded", sans-serif; font-size: 24px; font-weight: 800; }
+.waiter-total { display: flex; align-items: baseline; justify-content: space-between; padding: 16px 0; font-size: 22px; font-weight: 700; }
+.waiter-total strong { font-size: 32px; font-weight: 800; }
+
+/* ---------- кнопка «Скрыть цены»: размывает все цены на сайте ---------- */
+
+.theme[aria-pressed="true"] { border-color: var(--button); background: var(--button); color: var(--button-ink); }
+.price, .approx, .line-sum, .line-unit bdi, .total { transition: filter 0.2s ease; }
+:root[data-prices="hidden"] :is(.price, .approx, .line-sum, .line-unit bdi, .total) {
+	filter: blur(7px);
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.toast {
+	position: fixed;
+	top: calc(var(--top) + 10px);
+	left: 50%;
+	z-index: 40;
+	padding: 8px 16px;
+	border-radius: 999px;
+	background: var(--button);
+	color: var(--button-ink);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+	font-size: 13px;
+	font-weight: 700;
+	white-space: nowrap;
+	transform: translateX(-50%);
+	pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.price, .approx, .line-sum, .line-unit bdi, .total { transition: none; }
 }

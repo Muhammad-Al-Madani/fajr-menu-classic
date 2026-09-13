@@ -13,7 +13,10 @@
 	<link rel="stylesheet" href="styles.css">
 	<script>
 		/* тёмная тема до отрисовки страницы, чтобы не было вспышки белого */
-		try { if (localStorage.getItem("fajr-classic-theme") === '"dark"') document.documentElement.dataset.theme = "dark"; } catch (e) {}
+		try {
+			if (localStorage.getItem("fajr-classic-theme") === '"dark"') document.documentElement.dataset.theme = "dark";
+			if (localStorage.getItem("fajr-classic-prices") === '"hidden"') document.documentElement.dataset.prices = "hidden";
+		} catch (e) {}
 	</script>
 </head>
 <body>
@@ -29,6 +32,7 @@
 					<button type="button" data-lang="en">EN</button>
 					<button type="button" data-lang="ar">AR</button>
 				</div>
+				<button type="button" class="theme" id="prices"></button>
 				<button type="button" class="theme" id="theme"></button>
 			</div>
 		</div>
@@ -68,6 +72,7 @@
 			<div id="order-lines"></div>
 			<div class="sheet-foot">
 				<p class="approx-note" id="approx-note" data-i18n="approx"></p>
+				<div class="total-row"><span data-i18n="total"></span><strong class="total" id="order-total" dir="ltr"></strong></div>
 				<button type="button" class="primary" id="show-waiter" data-i18n="showWaiter"></button>
 				<button type="button" class="secondary" id="clear-order" data-i18n="clear"></button>
 			</div>
@@ -79,9 +84,12 @@
 		<div class="waiter-inner">
 			<h2 id="waiter-title">Заказ</h2>
 			<ul class="waiter-list" id="waiter-list"></ul>
+			<div class="waiter-total"><span>Итого</span><strong class="total" id="waiter-total"></strong></div>
 			<button type="button" class="primary" data-close data-i18n="close"></button>
 		</div>
 	</dialog>
+
+	<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 	<script src="data/menu.js"></script>
 	<script src="app.js"></script>

@@ -14,7 +14,8 @@
 		ru: {
 			title: "Fajr Coffee & Breakfast — меню",
 			intro: "Выбирайте блюда — итог посчитается сам. Готовый список покажите официанту.",
-			nav: "Разделы меню", myOrder: "Мой заказ",
+			nav: "Разделы меню", myOrder: "Мой заказ", total: "Итого",
+			hidePrices: "Скрыть цены", pricesHidden: "Цены скрыты", pricesShown: "Цены снова видны",
 			showWaiter: "Показать официанту", clear: "Очистить заказ", close: "Закрыть",
 			empty: "Пока пусто — нажмите «+» рядом с блюдом",
 			approx: "Блюда на вес: точная цена — после взвешивания",
@@ -27,7 +28,8 @@
 		en: {
 			title: "Fajr Coffee & Breakfast — menu",
 			intro: "Pick your dishes — the total adds up by itself. Show the list to your waiter.",
-			nav: "Menu sections", myOrder: "My order",
+			nav: "Menu sections", myOrder: "My order", total: "Total",
+			hidePrices: "Hide prices", pricesHidden: "Prices hidden", pricesShown: "Prices visible again",
 			showWaiter: "Show to waiter", clear: "Clear order", close: "Close",
 			empty: "Nothing yet — tap “+” next to a dish",
 			approx: "Dishes sold by weight: exact price after weighing",
@@ -40,7 +42,8 @@
 		ar: {
 			title: "Fajr Coffee & Breakfast — القائمة",
 			intro: "اختر الأطباق وسيُحسب المجموع تلقائيًا. اعرض القائمة الجاهزة على النادل.",
-			nav: "أقسام القائمة", myOrder: "طلبي",
+			nav: "أقسام القائمة", myOrder: "طلبي", total: "المجموع",
+			hidePrices: "إخفاء الأسعار", pricesHidden: "الأسعار مخفية", pricesShown: "الأسعار ظاهرة من جديد",
 			showWaiter: "اعرضه على النادل", clear: "مسح الطلب", close: "إغلاق",
 			empty: "القائمة فارغة — اضغط «+» بجانب الطبق",
 			approx: "الأطباق بالوزن: يُحدَّد السعر الدقيق بعد الوزن",
@@ -57,6 +60,8 @@
 		minus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>',
 		sun: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
 		moon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>',
+		eye: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+		eyeOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.6 6.6C3.9 8.3 2 12 2 12s3.6 7 10 7c1.9 0 3.6-.6 5-1.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>',
 		bag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
 	};
 
@@ -84,6 +89,7 @@
 	let lang = pickLanguage();
 	let theme = store.get("theme", "light") === "dark" ? "dark" : "light";
 	let order = sanitize(store.get("order", {}));
+	let pricesHidden = store.get("prices", "shown") === "hidden";
 
 	function pickLanguage() {
 		const saved = store.get("lang", null);
@@ -126,6 +132,20 @@
 		return item.unit === "g100" ? (price * qty) / 100 : price * qty;
 	}
 
+	function orderTotal() {
+		return Object.keys(order).reduce((sum, key) => sum + linePrice(key), 0);
+	}
+
+	// короткая подсказка вверху экрана
+	let toastTimer = null;
+	function toast(text) {
+		const el = $("toast");
+		el.textContent = text;
+		el.hidden = false;
+		clearTimeout(toastTimer);
+		toastTimer = setTimeout(() => { el.hidden = true; }, 1600);
+	}
+
 	// ---------- изменение заказа ----------
 	function change(key, dir) {
 		const stepSize = isWeight(key) ? 100 : 1;
@@ -159,15 +179,6 @@
 				<output aria-live="polite">${amount}</output>
 				<button type="button" data-act="plus" aria-label="${t("more")}">${ICON.plus}</button>
 			</span>`;
-	}
-
-	function priceTag(key) {
-		const { item, variant } = lines.get(key);
-		const price = variant ? variant.price : item.price;
-		const unit = unitLabel(item.unit);
-		const qty = order[key] || 0;
-		const approx = isWeight(key) && qty ? `<span class="approx" dir="ltr">≈ ${money(linePrice(key, qty))}</span>` : "";
-		return `<span class="price-wrap"><span class="price" dir="ltr">${money(price)}</span>${unit ? `<span class="unit">${esc(unit)}</span>` : ""}${approx}</span>`;
 	}
 
 	const buy = (key) => `<div class="buy" data-key="${esc(key)}">${buyInner(key)}</div>`;
@@ -260,17 +271,19 @@
 				<div class="line-text">
 					<span class="line-name">${esc(name(item.name))}</span>
 					${variant ? `<span class="line-variant">${esc(name(variant.name))}</span>` : ""}
+					<span class="line-unit"><bdi>${money(variant ? variant.price : item.price)}</bdi>${item.unit ? ` · ${esc(unitLabel(item.unit))}` : ""}</span>
 				</div>
 				<span class="stepper" role="group" aria-label="${esc(name(item.name))}">
 					<button type="button" data-act="minus" aria-label="${t("less")}">${ICON.minus}</button>
 					<output>${amount}</output>
 					<button type="button" data-act="plus" aria-label="${t("more")}">${ICON.plus}</button>
 				</span>
-				${priceTag(key)}
+				<span class="line-sum" dir="ltr">${isWeight(key) ? "≈ " : ""}${money(linePrice(key))}</span>
 			</div>`;
 		}).join("") : `<p class="empty">${t("empty")}</p>`;
 
 		$("approx-note").hidden = !keys.some(isWeight);
+		$("order-total").textContent = `${keys.some(isWeight) ? "≈ " : ""}${money(orderTotal())}`;
 		$("show-waiter").disabled = keys.length === 0;
 		$("clear-order").hidden = keys.length === 0;
 
@@ -292,6 +305,7 @@
 				: "";
 			return `<li><span class="w-qty">${amount}</span><span class="w-name">${esc(ru)}${local}</span></li>`;
 		}).join("");
+		$("waiter-total").textContent = `${keys.some(isWeight) ? "≈ " : ""}${money(orderTotal(), "ru")}`;
 		$("order-sheet").close();
 		$("waiter").showModal();
 	}
@@ -307,6 +321,16 @@
 		renderMenu();
 		refreshOrder();
 		applyTheme();
+		applyPrices();
+	}
+
+	function applyPrices() {
+		root.dataset.prices = pricesHidden ? "hidden" : "shown";
+		const btn = $("prices");
+		btn.innerHTML = pricesHidden ? ICON.eyeOff : ICON.eye;
+		btn.setAttribute("aria-pressed", String(pricesHidden));
+		btn.setAttribute("aria-label", t("hidePrices"));
+		btn.title = t("hidePrices");
 	}
 
 	function applyTheme() {
@@ -344,6 +368,13 @@
 		theme = theme === "dark" ? "light" : "dark";
 		store.set("theme", theme);
 		applyTheme();
+	});
+
+	$("prices").addEventListener("click", () => {
+		pricesHidden = !pricesHidden;
+		store.set("prices", pricesHidden ? "hidden" : "shown");
+		applyPrices();
+		toast(pricesHidden ? t("pricesHidden") : t("pricesShown"));
 	});
 
 	$("open-order").addEventListener("click", () => {
