@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr" data-variant="classic" data-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="robots" content="noindex">
+	<meta name="theme-color" content="#dedcd8">
+	<meta name="description" content="Меню Fajr Coffee & Breakfast, Учкекен">
+	<title>Fajr Coffee & Breakfast — меню</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=Montserrat:wght@400;600;700&family=Oswald:wght@500;600;700&family=Unbounded:wght@600;700&display=swap">
+	<link rel="stylesheet" href="styles.css">
+	<script>
+		/* тёмная тема до отрисовки страницы, чтобы не было вспышки белого */
+		try { if (localStorage.getItem("fajr-classic-theme") === '"dark"') document.documentElement.dataset.theme = "dark"; } catch (e) {}
+	</script>
+</head>
+<body>
+	<header class="topbar">
+		<div class="topbar-row">
+			<a class="brand" href="#top" aria-label="Fajr Coffee & Breakfast">
+				<span class="brand-name">FAJR<span class="brand-underscore">_</span></span>
+				<span class="brand-sub">COFFEE &amp; BREAKFAST</span>
+			</a>
+			<div class="controls">
+				<div class="lang" role="group" aria-label="Язык · Language · اللغة">
+					<button type="button" data-lang="ru">РУ</button>
+					<button type="button" data-lang="en">EN</button>
+					<button type="button" data-lang="ar" lang="ar">ع</button>
+				</div>
+				<button type="button" class="theme" id="theme"></button>
+			</div>
+		</div>
+		<nav class="nav" id="nav"></nav>
+	</header>
+
+	<main id="top">
+		<div class="intro">
+			<span class="halal" aria-label="Halal"><span lang="ar">حلال</span>HALAL</span>
+			<p class="intro-text" data-i18n="intro"></p>
+		</div>
+		<div id="menu"></div>
+	</main>
+
+	<footer class="footer">
+		<p class="footer-brand">FAJR_ COFFEE &amp; BREAKFAST</p>
+		<p data-i18n="address"></p>
+		<p data-i18n="hours"></p>
+		<p><a href="tel:+79283992525" dir="ltr">+7 928 399-25-25</a> · <a href="https://www.instagram.com/fajr_coffee_/" rel="noopener">Instagram</a></p>
+		<p class="demo-note" data-i18n="demo"></p>
+	</footer>
+
+	<div class="orderbar" id="orderbar" hidden>
+		<button type="button" class="orderbar-btn" id="open-order">
+			<span class="orderbar-icon" id="bar-icon"></span>
+			<span data-i18n="myOrder"></span>
+			<span class="orderbar-count" id="bar-count"></span>
+			<span class="orderbar-total" id="bar-total" dir="ltr"></span>
+		</button>
+	</div>
+
+	<dialog class="sheet" id="order-sheet" aria-labelledby="sheet-title">
+		<div class="sheet-inner">
+			<div class="sheet-head">
+				<h2 id="sheet-title" data-i18n="myOrder"></h2>
+				<button type="button" class="icon-btn" data-close aria-label="×">✕</button>
+			</div>
+			<div id="order-lines"></div>
+			<div class="sheet-foot">
+				<p class="approx-note" id="approx-note" data-i18n="approx"></p>
+				<div class="total-row"><span data-i18n="total"></span><strong id="order-total" dir="ltr"></strong></div>
+				<button type="button" class="primary" id="show-waiter" data-i18n="showWaiter"></button>
+				<button type="button" class="secondary" id="clear-order" data-i18n="clear"></button>
+			</div>
+		</div>
+	</dialog>
+
+	<!-- экран для официанта всегда по-русски -->
+	<dialog class="waiter" id="waiter" lang="ru" dir="ltr" aria-labelledby="waiter-title">
+		<div class="waiter-inner">
+			<h2 id="waiter-title">Заказ</h2>
+			<ul class="waiter-list" id="waiter-list"></ul>
+			<div class="waiter-total"><span>Итого</span><strong id="waiter-total"></strong></div>
+			<button type="button" class="primary" data-close data-i18n="close"></button>
+		</div>
+	</dialog>
+
+	<script src="data/menu.js"></script>
+	<script src="app.js"></script>
+</body>
+</html>
