@@ -7,6 +7,7 @@
  *        "portion" — цена за порцию
  *        "scoop"   — цена за шарик
  * photo: имя файла из images/dishes, cover: из images/covers
+ * banner: картинка раздела на всю ширину; hero: картинка с заголовком и общей ценой в пустых углах
  */
 window.FAJR_MENU = {
 	sections: [
@@ -126,9 +127,9 @@ window.FAJR_MENU = {
 			] }],
 		},
 		{
-			id: "grill", mark: "GRILL",
+			id: "grill", mark: "GRILL", banner: "grill",
 			title: { ru: "Мангал", en: "Grill", ar: "المشاوي" },
-			groups: [{ cover: "grill", items: [
+			groups: [{ items: [
 				{ id: "loin", price: 400, unit: "g100",
 					name: { ru: "Корейка", en: "Loin chops", ar: "ريش مشوية" } },
 				{ id: "lamb-assorti", price: 330, unit: "g100",
@@ -167,9 +168,10 @@ window.FAJR_MENU = {
 			] }],
 		},
 		{
-			id: "pizza", mark: "PIZZA",
+			id: "pizza", mark: "PIZZA", hero: "pizza",
+			heroNote: { ru: "любая пицца", en: "any pizza", ar: "أي بيتزا" },
 			title: { ru: "Пиццы", en: "Pizza", ar: "البيتزا" },
-			groups: [{ cover: "pizza", items: [
+			groups: [{ items: [
 				{ id: "julienne", price: 450,
 					name: { ru: "Жульен", en: "Julienne", ar: "جوليان" },
 					desc: { ru: "сырный соус, курица, грибы, сыр", en: "cheese sauce, chicken, mushrooms, cheese", ar: "صلصة الجبن، دجاج، فطر، جبن" } },

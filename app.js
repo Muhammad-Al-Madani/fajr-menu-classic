@@ -214,17 +214,39 @@
 		</div>`;
 	}
 
+	// одна цена на все позиции раздела (например, все пиццы) — иначе null
+	function samePrice(section) {
+		const prices = section.groups.flatMap((g) => g.items.map((i) => (i.variants ? null : i.price)));
+		return prices.length && prices.every((p) => p !== null && p === prices[0]) ? prices[0] : null;
+	}
+
+	function renderSection(s) {
+		const title = `<h2 class="section-title" id="h-${s.id}">${esc(name(s.title))}</h2>`;
+		let head = `<header class="section-head">${title}</header>`;
+		if (s.hero) {
+			// заголовок и общая цена встают в пустые углы картинки
+			const price = samePrice(s);
+			head = `<div class="hero">
+				<img class="hero-img" src="images/covers/${s.hero}.webp" alt="" loading="lazy" decoding="async">
+				<header class="hero-head"><span class="hero-mark" aria-hidden="true">${s.mark}</span>${title}</header>
+				${price !== null ? `<p class="hero-price"><span class="hero-note">${esc(only(s.heroNote))}</span><span class="price" dir="ltr">${money(price)}</span></p>` : ""}
+			</div>`;
+		}
+		const banner = s.banner
+			? `<div class="banner"><img class="banner-img" src="images/covers/${s.banner}.webp" alt="" loading="lazy" decoding="async"></div>`
+			: "";
+		return `<section class="section${s.hero ? " section--hero" : ""}" id="${s.id}" aria-labelledby="h-${s.id}">
+			<span class="section-mark" aria-hidden="true">${s.mark}</span>
+			${head}
+			${banner}
+			${s.groups.map(renderGroup).join("")}
+		</section>`;
+	}
+
 	function renderMenu() {
 		$("nav").innerHTML = MENU.sections
 			.map((s) => `<a href="#${s.id}" data-section="${s.id}">${esc(name(s.title))}</a>`).join("");
-		$("menu").innerHTML = MENU.sections.map((s) => `
-			<section class="section" id="${s.id}" aria-labelledby="h-${s.id}">
-				<span class="section-mark" aria-hidden="true">${s.mark}</span>
-				<header class="section-head">
-					<h2 class="section-title" id="h-${s.id}">${esc(name(s.title))}</h2>
-				</header>
-				${s.groups.map(renderGroup).join("")}
-			</section>`).join("");
+		$("menu").innerHTML = MENU.sections.map(renderSection).join("");
 		watchSections();
 	}
 

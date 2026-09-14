@@ -163,7 +163,8 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 
 /* ---------- вступление ---------- */
 
-main { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
+/* лишнее за краем (вертикальные надписи, картинки на всю ширину) обрезается по краю страницы */
+main { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; overflow-x: hidden; }
 
 .intro { display: flex; align-items: center; gap: 12px; padding: 16px 0 4px; }
 .halal {
@@ -187,7 +188,7 @@ main { max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
 
 /* ---------- разделы ---------- */
 
-.section { position: relative; padding: 30px 0 10px; overflow: hidden; scroll-margin-top: var(--top); }
+.section { position: relative; padding: 30px 0 10px; scroll-margin-top: var(--top); }
 .section-head { position: relative; z-index: 1; margin-bottom: 6px; }
 
 /* большое бледное слово вертикально вдоль края — как на страницах их меню */
@@ -477,3 +478,49 @@ dialog::backdrop { background: rgba(10, 10, 10, 0.5); }
 @media (prefers-reduced-motion: reduce) {
 	.price, .approx, .line-sum, .line-unit bdi, .total { transition: none; }
 }
+
+/* ---------- мангал и пиццы: картинки на всю ширину экрана ---------- */
+/* края, срезанные ещё на печатной странице, плавно растворяются в фоне */
+
+.hero, .banner { position: relative; z-index: 1; margin-inline: -16px; }
+.banner { margin-top: 2px; margin-bottom: 6px; }
+.hero { margin-bottom: 8px; }
+.hero-img, .banner-img {
+	display: block;
+	width: 100%;
+	height: auto;
+	-webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent), linear-gradient(to bottom, #000 76%, transparent);
+	-webkit-mask-composite: source-in;
+	mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent), linear-gradient(to bottom, #000 76%, transparent);
+	mask-composite: intersect;
+}
+[dir="rtl"] .hero-img { transform: scaleX(-1); }   /* пустой угол для заголовка — справа */
+
+.hero-head { position: absolute; top: 2%; inset-inline-start: 16px; max-width: 54%; }
+.hero-price {
+	position: absolute;
+	bottom: 10%;
+	inset-inline-end: 16px;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	margin: 0;
+	line-height: 1.1;
+	text-align: end;
+}
+.hero-note { color: var(--muted); font-size: 13px; font-weight: 600; }
+.hero-price .price { font-size: 34px; }
+
+@media (min-width: 700px) {
+	.hero, .banner { margin-inline: 0; }
+}
+
+.hero-mark { display: none; }   /* здесь латинское слово стоит вертикально вдоль края раздела */
+.section--hero > .section-mark { display: none; }   /* у композиции с пиццами уже есть заголовок и цена */
+
+/* у пицц срез только по самому краю — растворяем меньше, чтобы нижняя пицца не бледнела */
+.hero-img {
+	-webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent), linear-gradient(to bottom, #000 90%, transparent);
+	mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent), linear-gradient(to bottom, #000 90%, transparent);
+}
+.hero-price { bottom: 4%; }
